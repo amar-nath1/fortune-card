@@ -4,15 +4,17 @@ exports.postUser=(req,res,next)=>{
 console.log(req.body,'reqbody')
 bcrypt.hash(req.body.password,10,(err,hash)=>{
 if (err){
-    console.error(err)
+    console.log('errorhai',err)
     return
 }
+
 
 User.create({
     name:req.body.name,
     email:req.body.email,
     password:hash
 }).then((postres)=>{
+    console.log('user added',postres)
 res.status(200).json({'added':postres})
 }).catch((err)=>{
     if(err.name==='SequelizeUniqueConstraintError'){
@@ -32,7 +34,7 @@ exports.userLogin=(req,res,next)=>{
         }).then((foundUser)=>{
                     console.log(foundUser[0]['password'],'fu')
                     if(foundUser.length===0){
-                        res.status(200).json({'auth':'nullexistence'})
+                        res.status(200).json({auth:'nullexistence'})
                     }
                     else{
                         bcrypt.compare(req.body.password,foundUser[0]['password'],(err,result)=>{
@@ -40,7 +42,7 @@ exports.userLogin=(req,res,next)=>{
                                     console.error(err)
                                 }
                                 if (result===true){
-                                    res.status(200).json({'auth':true})
+                                    res.status(200).json({auth:true,user:foundUser[0]})
                                 }
                                 else{
                                     res.status(200).json({'auth':false})

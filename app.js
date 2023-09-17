@@ -1,12 +1,17 @@
 const express=require('express')
 const db=require('./util/database')
 const ur=require('./routes/authRoutes')
+const er=require('./routes/expenseRoutes')
+const Expense=require('./models/expense')
+const User=require('./models/user')
 const cors=require('cors')
 const app=express()
 app.use(cors())
 app.use(express.json())
 app.use(ur.routes)
-
+app.use(er.routes)
+User.hasMany(Expense)
+Expense.belongsTo(User)
 db.sync().then(()=>{
     app.listen(4000,()=>{
         console.log('listening to 4000')
