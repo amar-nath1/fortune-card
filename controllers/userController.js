@@ -1,5 +1,6 @@
 const bcrypt=require('bcrypt')
 const User=require('../models/user')
+const jwt=require('jsonwebtoken')
 exports.postUser=(req,res,next)=>{
 console.log(req.body,'reqbody')
 bcrypt.hash(req.body.password,10,(err,hash)=>{
@@ -15,7 +16,7 @@ User.create({
     password:hash
 }).then((postres)=>{
     console.log('user added',postres)
-res.status(200).json({'added':postres})
+res.status(200).json({'added':postres,token:generateAccessToken(postres.id)})
 }).catch((err)=>{
     if(err.name==='SequelizeUniqueConstraintError'){
         res.json({'errType':'already exists'})
@@ -24,6 +25,10 @@ res.status(200).json({'added':postres})
 
 })
 
+}
+
+const generateAccessToken=(userId)=>{
+    return jwt.sign({userId:userId},'sharpenerexpensetrackerproject')
 }
 
 exports.userLogin=(req,res,next)=>{
@@ -42,7 +47,7 @@ exports.userLogin=(req,res,next)=>{
                                     console.error(err)
                                 }
                                 if (result===true){
-                                    res.status(200).json({auth:true,user:foundUser[0]})
+                                    res.status(200).json({auth:true,user:foundUser[0],token:generateAccessToken(foundUser[0].id)})
                                 }
                                 else{
                                     res.status(200).json({'auth':false})

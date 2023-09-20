@@ -13,9 +13,10 @@ Expense.create({
 }
 
 exports.getExpense=(req,res,next)=>{
+    console.log(req.userId,'usereid')
 Expense.findAll({
     where:{
-        userId:req.params.id
+        userId:req.userId.userId
     }
 }).then((expensesRes)=>{
     res.status(200).json({expenses:expensesRes})
