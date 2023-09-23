@@ -13,7 +13,8 @@ if (err){
 User.create({
     name:req.body.name,
     email:req.body.email,
-    password:hash
+    password:hash,
+    premium:false
 }).then((postres)=>{
     console.log('user added',postres)
 res.status(200).json({'added':postres,token:generateAccessToken(postres.id)})

@@ -1,10 +1,12 @@
 const express=require('express')
 const ec=require('../controllers/expenseController')
+const pc=require('../controllers/premiumController')
 const mdlAuth=require('../middleware/auth')
 const router=express.Router()
 
-router.post('/add-expense',mdlAuth.authenticate,ec.postExpense)
-router.get('/all-expense',mdlAuth.authenticate,ec.getExpense)
-router.delete('/delete/:id',ec.deleteExpense)
+
+router.get('/go-premium',mdlAuth.authenticate,pc.goPremium)
+router.put('/go-premium',mdlAuth.authenticate,pc.putTransaction)
+
 
 exports.routes=router

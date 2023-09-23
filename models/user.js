@@ -15,7 +15,8 @@ const User=db.define('user',{
   email:{type:Sequelize.STRING,
     unique: true,
 },
-  password:Sequelize.STRING
+  password:Sequelize.STRING,
+  premium:Sequelize.BOOLEAN
 })
 
 module.exports=User

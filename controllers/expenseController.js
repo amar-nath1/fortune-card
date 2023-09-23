@@ -5,7 +5,7 @@ Expense.create({
     amount:req.body.amount,
     description:req.body.description,
     expenseType:req.body.expenseType,
-    userId:req.body.userId
+    userId:req.userId.userId
 }).then((addedExpense)=>{
     res.status(200).json({addedExpense:addedExpense})
 })
