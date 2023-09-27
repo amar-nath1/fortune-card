@@ -5,6 +5,7 @@ const router=express.Router()
 
 router.post('/add-expense',mdlAuth.authenticate,ec.postExpense)
 router.get('/all-expense',mdlAuth.authenticate,ec.getExpense)
+router.get('/all-expense-users',mdlAuth.authenticate,ec.getAllExpense)
 router.delete('/delete/:id',ec.deleteExpense)
 
 exports.routes=router
