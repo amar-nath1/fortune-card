@@ -30,15 +30,15 @@ Expense.findAll({
 }
 
 exports.getAllExpense=(req,res,next)=>{
-    Expense.findAll({
+    User.findAll({
         attributes: [
     [Sequelize.literal('user.id'), 'userId'],
-    [Sequelize.literal('SUM(expense.amount)'), 'totalAmount'],
+    [Sequelize.literal('SUM(expenses.amount)'), 'totalAmount'],
     [Sequelize.literal('user.name'), 'name'],
   ],
         include: [{
-            model: User, // No 'where' clause here
-            required: true,
+            model: Expense, // No 'where' clause here
+            
             attributes: [],
           },],
           group: [Sequelize.literal('user.id')],
