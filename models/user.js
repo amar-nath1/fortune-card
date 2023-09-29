@@ -16,7 +16,8 @@ const User=db.define('user',{
     unique: true,
 },
   password:Sequelize.STRING,
-  premium:Sequelize.BOOLEAN
+  premium:Sequelize.BOOLEAN,
+  totalAmount:Sequelize.FLOAT
 })
 
 module.exports=User

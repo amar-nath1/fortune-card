@@ -1,6 +1,7 @@
 const bcrypt=require('bcrypt')
 const User=require('../models/user')
 const jwt=require('jsonwebtoken')
+const Expense = require('../models/expense')
 exports.postUser=(req,res,next)=>{
 console.log(req.body,'reqbody')
 bcrypt.hash(req.body.password,10,(err,hash)=>{
@@ -10,11 +11,14 @@ if (err){
 }
 
 
+
+
 User.create({
     name:req.body.name,
     email:req.body.email,
     password:hash,
-    premium:false
+    premium:false,
+    totalAmount:0
 }).then((postres)=>{
     console.log('user added',postres)
 res.status(200).json({'added':postres,token:generateAccessToken(postres.id)})
