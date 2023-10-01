@@ -1,26 +1,38 @@
 const Expense=require('../models/expense')
 const User=require('../models/user')
 const Sequelize=require('sequelize')
-exports.postExpense=(req,res,next)=>{
+const sequelize = require('../util/database')
+exports.postExpense=async(req,res,next)=>{
+const t=await sequelize.transaction()
+try{
+   const addedExpense= await Expense.create({
+        amount:req.body.amount,
+        description:req.body.description,
+        expenseType:req.body.expenseType,
+        userId:req.userId.userId
+    },{transaction:t})
+       
+        
+        const user=await User.findOne({where:{id:req.userId.userId}})
+        if (!user) {
+            return res.status(404).json({message:'User not found'});
+          }
+          console.log(user.totalAmount+req.body.amount,'useeere')
+     await User.update({totalAmount:user.totalAmount+req.body.amount},{
+            where:{
+                id:req.userId.userId
+    
+            },
+            transaction:t
+        })
+            await t.commit()
+            res.status(200).json({addedExpense:addedExpense})
+        
+}
+catch(err){
+await t.rollback()
+}
 
-Expense.create({
-    amount:req.body.amount,
-    description:req.body.description,
-    expenseType:req.body.expenseType,
-    userId:req.userId.userId
-}).then(async (addedExpense)=>{
-    res.status(200).json({addedExpense:addedExpense})
-    const user=await User.findOne({where:{id:req.userId.userId}})
-    if (!user) {
-        return res.status(404).json({message:'User not found'});
-      }
-      console.log(user.totalAmount+req.body.amount+2,'useeere')
-    User.update({totalAmount:user.totalAmount+req.body.amount},{
-        where:{
-            id:req.userId.userId
-        }
-    })
-})
 
 }
 
@@ -59,15 +71,43 @@ exports.getAllExpense=(req,res,next)=>{
         });
 }
 
-exports.deleteExpense=(req,res,next)=>{
-Expense.destroy({
-    where:{
-        id:req.params.id
+exports.deleteExpense=async (req,res,next)=>{
+    const t=await sequelize.transaction()
+
+    try{
+                  
+          const exp=await Expense.findOne({where:{id:req.params.id}})
+          
+
+      const delExp=  await Expense.destroy({
+            where:{
+                id:req.params.id
+            },
+            transaction:t
+
+        })
+        const user=await User.findOne({where:{id:req.userId.userId}})
+        if (!user) {
+            return res.status(404).json({message:'User not found'});
+          }
+                
+     await User.update({totalAmount:user.totalAmount-exp.amount},{
+            where:{
+                id:req.userId.userId
+    
+            },
+            transaction:t
+        })
+            await t.commit()
+           
+            res.status(200).json({success:true})
     }
-}).then(()=>{
-    res.status(200).json({success:true})
-}).catch((err)=>{
-    console.log(err)
-    res.status(200).json({success:false})
-})
+
+    catch(err){
+        await t.rollback()
+
+    }
+
+
+
 }
