@@ -1,6 +1,8 @@
 const bcrypt=require('bcrypt')
 const User=require('../models/user')
 const jwt=require('jsonwebtoken')
+const Sib=require('sib-api-v3-sdk')
+require('dotenv').config()
 const Expense = require('../models/expense')
 exports.postUser=(req,res,next)=>{
 console.log(req.body,'reqbody')
@@ -70,4 +72,35 @@ exports.userLogin=(req,res,next)=>{
     }).catch((err)=>{
             res.status(200).json({'auth':'nullexistence'})
         })
+}
+
+exports.forgotPassword=(req,res,next)=>{
+    console.log(req.body.resetEmail,'dmmmmapikeyyyy')
+    const client=Sib.ApiClient.instance
+    const apiKey=client.authentications['api-key']
+    apiKey.apiKey=process.env.EMAIL_API_KEY
+    
+
+    const tranEmaiApi=new Sib.TransactionalEmailsApi()
+    const sender={
+        email:'amarnath41996@gmail.com'
+    }
+
+    const receivers=[
+        {
+            email:req.body.resetEmail
+        }
+    ]
+    tranEmaiApi.sendTransacEmail({
+        sender,
+        to:receivers,
+        subject:'forgot password reset email',
+        textContent: 'Please reset your password here.'
+    }).then(()=>{
+        res.status(200).json({msg:'mailsent'})
+        console.log('mail sent')
+    })
+    .catch((err)=>{
+        console.log(err,'err hai')
+    })
 }
