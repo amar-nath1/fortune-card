@@ -1,7 +1,9 @@
 const bcrypt=require('bcrypt')
 const User=require('../models/user')
 const jwt=require('jsonwebtoken')
+const ResetPassword=require('../models/forgotpassword')
 const Sib=require('sib-api-v3-sdk')
+const { v4: uuidv4 } = require('uuid');
 require('dotenv').config()
 const Expense = require('../models/expense')
 exports.postUser=(req,res,next)=>{
@@ -74,13 +76,24 @@ exports.userLogin=(req,res,next)=>{
         })
 }
 
-exports.forgotPassword=(req,res,next)=>{
-    console.log(req.body.resetEmail,'dmmmmapikeyyyy')
+exports.forgotPassword=async (req,res,next)=>{
+    const userEmail=await User.findOne({where:{
+        email:req.body.resetEmail
+    }})
+    if(!userEmail){
+        return res.status(200).json({userFound:false})
+    }
+
+    const uuid=uuidv4()
+    await ResetPassword.create({
+        uuid:uuid,
+        userId:userEmail.id,
+        isActive:true
+    })
     const client=Sib.ApiClient.instance
     const apiKey=client.authentications['api-key']
     apiKey.apiKey=process.env.EMAIL_API_KEY
     
-
     const tranEmaiApi=new Sib.TransactionalEmailsApi()
     const sender={
         email:'amarnath41996@gmail.com'
@@ -95,12 +108,41 @@ exports.forgotPassword=(req,res,next)=>{
         sender,
         to:receivers,
         subject:'forgot password reset email',
-        textContent: 'Please reset your password here.'
+        
+        htmlContent:`<p>Please reset your password here.</p><a href="http://localhost:8100/password/resetpassword/${uuid}">http://localhost:8100/password/resetpassword/${uuid}</a>`
     }).then(()=>{
-        res.status(200).json({msg:'mailsent'})
+
+        res.status(200).json({userFound:true,msg:'mailsent'})
         console.log('mail sent')
     })
     .catch((err)=>{
         console.log(err,'err hai')
     })
+}
+
+exports.updatePassword=async (req,res,next)=>{
+    console.log(req.body,' requuidbody')
+const activeUuid=await ResetPassword.findOne({where:{
+    uuid:req.body.uuid,
+    isActive:true
+}})
+activeUuid.isActive=false
+await activeUuid.save()
+const user=await User.findOne({where:{
+    id:activeUuid.userId
+}})
+bcrypt.hash(req.body.newPassword,10,async(err,hash)=>{
+    if (!err){
+        user.password=hash
+        await user.save()
+        res.status(200).json({msg:'password updated successfully'})
+    }
+
+    else{
+        console.log('got error in hash newpassword')
+    }
+    
+})
+
+console.log(activeUuid,' activeuuid')
 }
