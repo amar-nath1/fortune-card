@@ -104,7 +104,7 @@ const getCurrentDateInfo=(option)=> {
 
 
     console.log(req.userId,'usereid')
-Expense.findAll({
+Expense.findAndCountAll({
     where:{
         userId:req.userId.userId,
         createdAt: {
@@ -117,9 +117,13 @@ Expense.findAll({
               )
             ]
           }
-    }
-}).then(async (expensesRes)=>{
-  // console.log(JSON.stringify(expensesRes),'expres')
+    },
+    offset: Number(req.query.offset),
+  limit: 5,
+}).then(async (results)=>{
+  
+    const expensesRes=results.rows
+    const count=results.count
     if (req.query.download=='true'){
      let sRes=await uploadToS3(JSON.stringify(expensesRes),`etdata${new Date().getTime()}tme${req.userId.userId}.txt`)
      console.log(sRes,'sRes')
@@ -127,7 +131,7 @@ Expense.findAll({
      res.status(200).json({fileUrl:sRes})
     }
     else{
-      res.status(200).json({expenses:expensesRes})
+      res.status(200).json({expenses:expensesRes,count:count})
     }
     
 }).catch((err)=>{
