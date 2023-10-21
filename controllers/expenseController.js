@@ -119,7 +119,7 @@ Expense.findAndCountAll({
           }
     },
     offset: Number(req.query.offset),
-  limit: 5,
+  limit: Number(req.query.itemsperpage),
 }).then(async (results)=>{
   
     const expensesRes=results.rows
