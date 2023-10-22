@@ -1,0 +1,1 @@
+::1 - - [22/Oct/2023:02:38:28 +0000] "GET /all-expense?filtertype=year&download=false&offset=0&itemsperpage=5 HTTP/1.1" 500 861 "http://localhost:8100/" "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
