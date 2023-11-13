@@ -39,7 +39,7 @@ User.hasMany(FileUrl)
 FileUrl.belongsTo(User)
 db.sync().then(()=>{
     app.listen(process.env.PORT |4000,()=>{
-        console.log('listening to ', process.env.PORT)
+        console.log('listening to whatver ', process.env.PORT)
     })
 }).catch((err)=>{
     console.log(err)
