@@ -13,6 +13,8 @@ const Order=db.define('order',{
     paymentid:Sequelize.STRING,
     orderid:Sequelize.STRING,
     status:Sequelize.STRING,
+    cardNum:Sequelize.BIGINT,
+    countCard:Sequelize.INTEGER
 })
 
 module.exports=Order

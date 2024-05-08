@@ -4,6 +4,7 @@ const User=require('../models/user')
 
 exports.goPremium=(req,res,next)=>{
     const apikey=process.env.KEY_ID
+    console.log(req.query.ct,' ctctctct')
     
 try{
     
@@ -12,8 +13,8 @@ try{
             key_secret:process.env.KEY_SECRET
     })
     
-   
-    rzp.orders.create({amount:200,currency:'INR'},(err,order)=>{
+   const totalRs = +req.query.ct *200
+    rzp.orders.create({amount:totalRs,currency:'INR'},(err,order)=>{
         if (err){
             throw new Error(JSON.stringify(err))
         }
@@ -41,6 +42,7 @@ exports.putTransaction=async (req,res,next)=>{
     try{
         
     const updatedUserData=req.body
+    console.log(updatedUserData,'updataaa')
     Order.update(updatedUserData,{
         where:{
             orderid:updatedUserData.orderid
